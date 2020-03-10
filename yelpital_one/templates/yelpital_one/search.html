@@ -1,0 +1,163 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Yelpital One</title>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    
+    <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
+    <script src="//d3js.org/topojson.v1.min.js"></script>
+    <script src="{% static 'topojson/topojson.min.js' %}"></script>
+
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.6.1/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'data/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+		
+    <style media="screen">
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; };
+
+        svg.data {
+            position: absolute;
+            width: 100%;
+            height: 1332%;
+        }
+
+        svg.legend {
+        position: absolute;
+        width: 230px;
+        height: 205px;
+        bottom: 4%;
+        right: 0%;
+        }
+
+        @media screen and (min-width:330px){
+        svg.legend {
+        position: absolute;
+        width: 285px;
+        height: 205px;
+        bottom: 30%;
+        left: 0%;
+        }
+    }
+        circle.slidecontainer_location_markers {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        }
+
+        circle.slidecontainer_location_markers {
+            fill: #da1111d3;
+            stroke: #da11111e;
+            stroke-width: 7;
+            cursor: pointer;
+            transition: 0.5s fill, 0.5s stroke-width;
+        }
+        circle.slidecontainer_location_markers:hover {
+            fill: #f5e50d;
+            r: 5;
+            stroke: rgba(179, 26, 26, 0.486);
+            stroke-width: 3;
+        }
+        
+        
+        .slidecontainer_location_titles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        }
+
+        .slidecontainer_legend {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        }
+
+        title {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        }
+
+        .slidecontainer_legend_circle {
+        stroke: black;
+        }
+
+        .slidecontainer_legend_line {
+        position: absolute;
+        width: 250px;
+        height: 205px;
+        bottom: 5%;
+        right: 3%;
+        }
+
+        .slidecontainer_legend_text {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        }
+
+        form {
+            position: absolute;
+            z-index:5;
+        }
+
+    </style>
+    
+</head>
+<body>
+
+    <script>
+        var dataurl = "{% static 'data/rest_merge.csv' %}"
+        var resulturl = "{% static 'data/searchResult.json' %}"
+    </script>
+
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <div id="slidecontainer"></div>
+
+    <div class="row align-items-center">
+        <div class="col-sm-2"><p id="value-time"></p></div>
+        <div class="col-sm"><div id="slider-time"></div>
+    </div>
+
+    <div id="rates"></div>
+
+    <div id="map"></div>
+    
+    <script src="{% static 'yelpital_one/js/mapbox-d3.js' %}"></script>
+
+      <nav id="sidebar">
+        <div class="p-4 pt-5">
+            <div class="mb-5">
+                <form name="search" action="/" method="get" class="subscribe-form">{% csrf_token %}
+                    <div class="form-group d-flex">
+                        <input type="text" class="form-control" name="name" placeholder="Restaurants" value="Restaurants">
+                        <input type="text" class="form-control" name="location" placeholder="Location" value="United States">
+                        
+                        <input type="submit" class="form-control-btn" value="Search">
+                    </div>
+                </form>
+            </div>
+
+	        <ul class="list-unstyled components mb-5">
+	          
+                    {% for biz in results.businesses %}
+                <li><a onclick="goToTarget('{{biz.coordinates.latitude}}', '{{biz.coordinates.longitude}}')"><span class="fa fa-chevron-right mr-2"></span> {{biz.name}} <br> {{biz.rating}} ★ ({{biz.review_count}}) <br> {{biz.price}}・{{biz.categories.0.title}}・{{biz.location.address1}} <br> {% if biz.is_closed %} closed {% else %} open {% endif %}</a><img src= "{{biz.image_url}}" class="result-img"></li> {% endfor %}
+	        </ul>
+	      </div>
+    	</nav>
+        
+        <script src="{% static 'yelpital_one/js/jquery.min.js' %}"></script>
+        <script src="{% static 'yelpital_one/js/main.js' %}"></script>
+
+</body>
+</html>
